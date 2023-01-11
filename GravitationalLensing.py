@@ -15,6 +15,34 @@ import torchvision
 import torchvision.transforms as transform
 import matplotlib.pyplot as plt
 
+import torch
+from torch.utils.data import Dataset
+from astropy.io import fits
+
+class FITSDataset(Dataset):
+    def __init__(self, root_dir, transform=None):
+        self.root_dir = root_dir
+        self.transform = transform
+
+    def __len__(self):
+        return len(os.listdir(self.root_dir))
+
+    def __getitem__(self, idx):
+        file_name = os.listdir(self.root_dir)[idx]
+        file_path = os.path.join(self.root_dir, file_name)
+
+        with fits.open(file_path) as hdul:
+            data = hdul[0].data
+        if self.transform:
+            data = self.transform(data)
+        return data
+
+# Instantiate the dataset
+fits_dataset = FITSDataset('path/to/fits/files/', transform=None)
+
+# Create a DataLoader
+dataloader = torch.utils.data.DataLoader(fits_dataset, batch_size=64, shuffle=True, num_workers=4)
+
 
 
 class initialisation:
