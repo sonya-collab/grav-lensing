@@ -1,10 +1,5 @@
 #Hello there! This is just a test! HELLO
-<<<<<<< HEAD
-import pytorch
 
-
-||||||| 93c3fd5
-=======
 import torch
 from astropy.io import fits
 import matplotlib.pyplot as plt
@@ -13,8 +8,8 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 import torchvision
 import torchvision.transforms as transform
-import matplotlib.pyplot as plt
-
+import os
+import numpy as np
 import torch
 from torch.utils.data import Dataset
 from astropy.io import fits
@@ -36,17 +31,16 @@ class FITSDataset(Dataset):
         if self.transform:
             data = self.transform(data)
         return data
-
 # Instantiate the dataset
-fits_dataset = FITSDataset('path/to/fits/files/', transform=None)
+
 
 # Create a DataLoader
-dataloader = torch.utils.data.DataLoader(fits_dataset, batch_size=64, shuffle=True, num_workers=4)
 
 
 
-class initialisation:
-    training_data = torchvision.datasets.FashionMNIST(
+
+class Initialisation:
+    '''training_data = torchvision.datasets.FashionMNIST(
         root="data",
         train=True,
         download=True,
@@ -58,8 +52,45 @@ class initialisation:
         train=False,
         download=True,
         transform=transform.ToTensor()
-    )
-    train_dataloader =torch.utils.data.DataLoader(training_data, batch_size=4, shuffle=True, num_workers=2)
+    )'''
+    #fits_dataset = fits.open(r"lens_1.fits")
+    transform=transform.Compose([transform.ToTensor(), transform.Normalize((0,0,0),(1,1,1))])
+    loader=FITSDataset(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project", transform)
+    
+    fits_dataset=loader.__getitem__(0)
+    train_size = int(0.8 * len(fits_dataset))
+    test_size = len(fits_dataset) - train_size
+    train_dataset, test_dataset = torch.utils.data.random_split(fits_dataset, [train_size, test_size])
+    #trainloader = torch.utils.data.DataLoader(fits_dataset, batch_size=16, shuffle=True, num_workers=2)
+    #validationloader = torch.utils.data.DataLoader(fits_dataset, batch_size=16, shuffle=False, num_workers=2)
+    classes = ('lens', 'non_lens')
+    images_train = iter(fits_dataset)
+    #images_valid = iter(validationloader)
+    train_data = fits.getdata(images_train, ext=0)
+    #valid_data = fits.getdata(images_valid, ext=0)
+    imageRGB_reshape_train = np.einsum('kij->ijk',images_train)
+    #imageRGB_reshape_valid = np.einsum('kij->ijk',images_valid)
+    plt.imshow(imageRGB_reshape_train)
+    plt.show
+    
+
+    # functions to show an image
+
+
+    '''def imshow(img):
+        #img = img / 2 + 0.5     # unnormalize
+        npimg = img.numpy()
+        plt.imshow(np.transpose(npimg, (1, 2, 0)))'''
+
+
+    # get some random training images
+    #images = iter(train_dataset)
+    
+
+    # show images
+    #imshow(torchvision.utils.make_grid(images))
+    # print labels
+    #print(' '.join('%5s' % for j in range(4)))
 
 class Net(nn.Module):
     def __init__(self):
@@ -95,14 +126,29 @@ class Net(nn.Module):
 
     def forward(self, x):
         # Max pooling over a (2, 2) window
-        for block in range(7):
-            x = F.relu(self.conv11(x)), (2, 2))
-            # If the size is a square you can only specify a single number
-            x = F.relu(self.conv2(x)), 2)
-            x = x.view(-1, self.num_flat_features(x))
-            x = F.relu(self.fc1(x))
-            x = F.relu(self.fc2(x))
-            x = self.fc3(x)
+        x = F.relu(self.conv11(x), (2, 2))
+        x = F.relu(self.conv12(x), (2, 2))
+        x = F.relu(self.conv21(x), (2, 2))
+        x = F.relu(self.conv22(x), (2, 2))
+        x = F.relu(self.conv31(x), (2, 2))
+        x = F.relu(self.conv32(x), (2, 2))
+        x = F.relu(self.conv41(x), (2, 2))
+        x = F.relu(self.conv42(x), (2, 2))
+        x = F.relu(self.conv51(x), (2, 2))
+        x = F.relu(self.conv52(x), (2, 2))
+        x = F.relu(self.conv61(x), (2, 2))
+        x = F.relu(self.conv62(x), (2, 2))
+        x = F.relu(self.conv71(x), (2, 2))
+        x = F.relu(self.conv72(x), (2, 2))
+        x = F.relu(self.conv81(x), (2, 2))
+        x = F.relu(self.conv82(x), (2, 2))
+    
+        # If the size is a square you can only specify a single number
+        x = x.view(-1, self.num_flat_features(x))
+        x = F.relu(self.fc1(x))
+        x = F.sigmoid(self.fc2(x))
+        x = self.fc1(x)
+        x = self.fc2(x)
         return x
 
     def num_flat_features(self, x):
@@ -111,4 +157,7 @@ class Net(nn.Module):
         for s in size:
             num_features *= s
         return num_features
->>>>>>> 3b9b4db3263bb144c79c6996eec1bdc75c75ce0e
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using {device} device")
+model=Net().to(device)
+print(model)
