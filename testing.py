@@ -19,6 +19,7 @@ from torch.utils.data import Dataset
 from astropy.io import fits
 from PIL import Image
 
+import pandas as pd
 
 '''class CustomDataSet(Dataset):
     def __init__(self, main_dir, transform):
@@ -79,11 +80,25 @@ class DatasetFolder:
         return image_data
 
 class Initialisation:
-    loader=DatasetFolder()
-    fits_dataset = loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project")
+    lenses = []
+    loader = DatasetFolder()
+    lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_1"))
+    lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_2"))
+    lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_3"))
+    lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_4"))
+    lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_5"))
+    #l.append(datasets.ImageFolder(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens"))
+    #l.append(datasets.ImageFolder(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_4"))
+    #l.append(datasets.ImageFolder(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_5"))
+    fit_datasets = torch.utils.data.ConcatDataset(lenses)
+    
+
+
+    
+    image_dataset = loader.load_fits(fit_datasets)
     #new=os.startfile(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens_1")
     #trainloader = torch.utils.data.DataLoader(fits_dataset, batch_size=16, shuffle=True, num_workers=2)
-    images = enumerate(fits_dataset)
+    images = enumerate(image_dataset)
     #image_file = get_pkg_data_filename(r"lens_1.fits")
     #fits_dataset = fits.open(r"lens_1.fits")
     ##fits_dataset.info()
