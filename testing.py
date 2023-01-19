@@ -70,68 +70,100 @@ import pandas as pd
         return Image.fromarray(data)'''
 
 class DatasetFolder:
-    def __init__(self):
-        pass
-    def load_fits(self,filename):
-        hdulist=fits.open(filename, 'update')
-        hdu=hdulist[0]
-        image_data=hdu.data
-        hdulist.close()
-        return image_data
+    def __init__(self, root_dir, transforms=None):
+        self.root_dir=root_dir
+        self.transforms=transforms
+    def __len__(self):
+        return len(os.listdir(self.root_dir))
+    def __getitem__(self,index):
+        label=os.listdir(self.root_dir)[index]
+        fits_path=r''+self.root_dir+'/'+label
+        file=fits.getdata(fits_path, ext=0)
+        file=file.astype(float)
+        #print(type(file), file.dtype)
+        #hdulist=fits.open(filename, 'update')
+        #hdu=hdulist[0]
+        #image_data=hdu.data
+        #hdulist.close()
+        if self.transforms:
+            file=self.transforms(file)
+        return (file, label)
+
 
 class Initialisation:
-    lenses = []
-    loader = DatasetFolder()
-    lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_1"))
-    lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_2"))
-    lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_3"))
-    lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_4"))
-    lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_5"))
-    #l.append(datasets.ImageFolder(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens"))
-    #l.append(datasets.ImageFolder(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_4"))
-    #l.append(datasets.ImageFolder(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_5"))
-    fit_datasets = torch.utils.data.ConcatDataset(lenses)
-    
+    def main():
+        filedir=r'C:/Users/sonya/gravLensing/gravlensing_sonya.francisco/tum_project/lens'
+        filename1=os.listdir(filedir)
+        print(filename1)
+        lenses = []
+        for filename in filename1:
+            filedir2=r''+filedir+'/'+filename
+            filename2=os.listdir(filedir2)
+            data=DatasetFolder(filedir2, None)
+            lenses.append(data)
+        print(lenses)
+        #lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_2"))
+        #lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_3"))
+        #lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_4"))
+        #lenses.append(loader.load_fits(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_5"))
+        #l.append(datasets.ImageFolder(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens"))
+        #l.append(datasets.ImageFolder(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_4"))
+        #l.append(datasets.ImageFolder(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens\lens_5"))
+        image_dataset = torch.utils.data.ConcatDataset(lenses)
+        #print(image_dataset)
+        trainloader = torch.utils.data.DataLoader(image_dataset, batch_size=64, shuffle=True)
+        
+
+        
+        
+        #new=os.startfile(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens_1")
+        #trainloader = torch.utils.data.DataLoader(fits_dataset, batch_size=16, shuffle=True, num_workers=2)
+        #print(trainloader)
+       
+        
+        target=next(iter(trainloader))
+        print(len(trainloader))
+        
+        fig=plt.figure()
+        #plt.imshow()
+        imageRGB_reshape = np.einsum('kij->ijk',target[0][1])
+        plt.imshow(imageRGB_reshape)
+        plt.show()
+        #image_file = get_pkg_data_filename(r"lens_1.fits")
+        #fits_dataset = fits.open(r"len
+        # lens_1.fits")
+        #fits_dataset.info()
+
+        
+        
+        #
+        #image=fits.getdata()
+        
+        #my_dataset = CustomDataSet(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens_1", transform=trsfm)
+        #train_loader = data.DataLoader(my_dataset , batch_size=batch_size, shuffle=False, num_workers=4, drop_last=True)
+        #for idx, img in enumerate(train_loader):
+        #do your training now
+        #transform=transform.Compose([transform.ToTensor(), transform.Normalize((0,0,0),(1,1,1))])
+        #trainloader = torch.utils.data.DataLoader(fits_dataset, batch_size=16, shuffle=True, num_workers=2)
+        #validationloader = torch.utils.data.DataLoader(fits_dataset, batch_size=16, shuffle=True, num_workers=2)
+        #classes = ('lens', 'non_lens')
+
+        
+
+        # functions to show an image
 
 
-    
-    image_dataset = loader.load_fits(fit_datasets)
-    #new=os.startfile(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens_1")
-    #trainloader = torch.utils.data.DataLoader(fits_dataset, batch_size=16, shuffle=True, num_workers=2)
-    images = enumerate(image_dataset)
-    #image_file = get_pkg_data_filename(r"lens_1.fits")
-    #fits_dataset = fits.open(r"lens_1.fits")
-    ##fits_dataset.info()
-
-    image_data = fits.getdata(images, ext=0)
-    
-    imageRGB_reshape = np.einsum('kij->ijk',image_data)
-    plt.imshow(imageRGB_reshape)
-    plt.show
-    #my_dataset = CustomDataSet(r"C:\Users\sonya\gravLensing\gravData\tum_project_lens_classif.tar\tum_project\lens_1", transform=trsfm)
-    #train_loader = data.DataLoader(my_dataset , batch_size=batch_size, shuffle=False, num_workers=4, drop_last=True)
-    #for idx, img in enumerate(train_loader):
-    #do your training now
-    #transform=transform.Compose([transform.ToTensor(), transform.Normalize((0,0,0),(1,1,1))])
-    #trainloader = torch.utils.data.DataLoader(fits_dataset, batch_size=16, shuffle=True, num_workers=2)
-    #validationloader = torch.utils.data.DataLoader(fits_dataset, batch_size=16, shuffle=True, num_workers=2)
-    #classes = ('lens', 'non_lens')
-
-    
-
-    # functions to show an image
+        #def imshow(img):
+            #img = img / 2 + 0.5     # unnormalize
+        #   npimg = img.numpy()
+        #  plt.imshow(np.transpose(npimg, (1, 2, 0)))
 
 
-    #def imshow(img):
-        #img = img / 2 + 0.5     # unnormalize
-     #   npimg = img.numpy()
-      #  plt.imshow(np.transpose(npimg, (1, 2, 0)))
+        # get some random training images
+        #images = iter(trainloader)
+        
 
-
-    # get some random training images
-    #images = iter(trainloader)
-    
-
-    # show images
-    
+        # show images
+    if __name__=='__main__':
+        main() 
     

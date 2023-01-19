@@ -61,10 +61,10 @@ class Initialisation:
     train_size = int(0.8 * len(fits_dataset))
     test_size = len(fits_dataset) - train_size
     train_dataset, test_dataset = torch.utils.data.random_split(fits_dataset, [train_size, test_size])
-    #trainloader = torch.utils.data.DataLoader(fits_dataset, batch_size=16, shuffle=True, num_workers=2)
-    #validationloader = torch.utils.data.DataLoader(fits_dataset, batch_size=16, shuffle=False, num_workers=2)
+    trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=2)
+    validationloader = torch.utils.data.DataLoader(test_dataset, batch_size=16, shuffle=False, num_workers=2)
     classes = ('lens', 'non_lens')
-    images_train = iter(fits_dataset)
+    images_train = iter(trainloader)
     #images_valid = iter(validationloader)
     train_data = fits.getdata(images_train, ext=0)
     #valid_data = fits.getdata(images_valid, ext=0)
@@ -95,7 +95,7 @@ class Initialisation:
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        # 1 input image channel (black & white), 6 output channels, 3x3 square convolution
+        # 3 input image channel (I,R,B), 6 output channels, 3x3 square convolution
         # kernel
         self.conv11 = nn.Conv2d(3, 6, 3)
         self.conv12 = nn.Conv2d(6, 16, 3)
