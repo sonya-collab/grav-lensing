@@ -89,7 +89,49 @@ class DatasetFolder:
             file=self.transforms(file)
         return (file, label)
 
+####testing for image channels, normalisations etc. non-working alternatives:
+#transforms.Normalize((0,0,0),(1,1,1)) ,transforms.Normalize((0,),(1,)) , transforms.Normalize(mean=(0.0628418,  0.30500231, 0.67452615),std=(0.16051376, 0.73852639, 1.74141281)) wrong!!! has to be done for each! picture
+        #doesn't work yet!
+        #Assume your image is a 4D tensor of shape (N, H, W, C), want to move C to front
 
+#print(len(lenses[1][100][0][0][3]))
+
+#print(type(train_dataset[0][0]))
+        #for traindata in train_dataset:
+        #   train_reshape = np.einsum('kij->ijk',traindata)
+
+#print(type(train_dataset[0]))
+
+'''mean=[]
+        std=[]
+        for i in range(3):
+            meantemp, stdtemp = target[i].mean([0,0,0]), target.std([1,1,1])
+            mean.append(meantemp)
+            std.append(stdtemp)
+        print('mean:', mean, 'std:', std)'''
+
+# Calculate the mean and standard deviation
+        #mean /= len(trainloader.dataset)
+        #std /= len(trainloader.dataset)
+        #first50=train_dataset[:50]
+        #target=next(iter(trainloader))
+        #first_50_indices = range(50)
+        #subset_dataset = torch.utils.data.Subset(target, first_50_indices)
+        #std = torch.std(torch.stack([subset_dataset[i][0] for i in range(len(subset_dataset))]), dim = 1)
+        #mean = torch.mean(torch.stack(first50), dim=(0, 2, 3))
+
+        #npim=np.array(subset_dataset)
+        #mean, std = np.mean(npim, axis=0), np.std(npim, axis=0)
+        #print('mean:', mean, 'std:', std)
+
+#alternative images grid
+#print(len(target[0]))
+        #img_grid = torchvision.utils.make_grid(target[0]) #should show images in grid with oorresponding labels...
+        #print(len(img_grid[0]))
+        #imgGrid_reshape = np.einsum('ijk->kij',img_grid)
+        #print(len(imgGrid_reshape))
+        #plt.imshow(img_grid)
+        #, one_channel=True
 class Initialisation:
     def main():
         filedir=r'C:/Users/sonya/gravLensing/gravlensing_sonya.francisco/tum_project/lens'
