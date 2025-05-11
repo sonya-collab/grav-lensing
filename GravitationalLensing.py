@@ -1,4 +1,4 @@
-#Hello there! This is just a test! HELLO
+
 
 import torch
 from astropy.io import fits
@@ -31,10 +31,7 @@ class FITSDataset(Dataset):
         if self.transform:
             data = self.transform(data)
         return data
-# Instantiate the dataset
 
-
-# Create a DataLoader
 
 
 
